@@ -6,6 +6,7 @@
 #
 
 # Source Prezto.
+
 if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
@@ -24,14 +25,9 @@ fpath=(/usr/local/share/zsh-completions $fpath)
 setopt extendedglob
 unsetopt CASE_GLOB
 
-# Uncomment the following line to display red dots whilst waiting for completion.
-COMPLETION_WAITING_DOTS="true"
-
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(git ruby brew cpanm dirhistory gem osx pip python rvm utility syntax-highlighting history common-aliases sublime jsontools thefuck)
+bindkey -v
+bindkey '^[[1;2C' forward-word
+bindkey '^[[1;2D' backward-word
 
 source /usr/local/share/zsh/site-functions/_aws
 
@@ -46,7 +42,7 @@ export SSH_KEY_PATH="~/.ssh/id_rsa"
 export LANG=en_US.UTF-8
 export PERL_MB_OPT="--install_base \"/Users/mah/.perl5\""
 export PERL_MM_OPT="INSTALL_BASE=/Users/mah/.perl5"
-export HOMEBREW_GITHUB_API_TOKEN="a62f894aa44de4883cec60b0f96d9196ea58c689"
+export HOMEBREW_GITHUB_API_TOKEN="dc32ba71c9340762ffedf31fbc628e7ef38ea15d"
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
@@ -67,19 +63,22 @@ export ARCHFLAGS="-arch x86_64"
 alias zshconf="vim $HOME/.zshrc"
 alias sshconf="vim $HOME/.ssh/config"
 alias tarx="tar -xvf"
-
+function tarz() {gtar -vcf "$1.tar.gz" -I pigz "$1"}
 alias cam="rename -f --lower-case --camelcase"
 alias cap="rename -f --upper-case"
 alias decap="rename -f --lower-case"
 
 alias stk="dirs -v"
-alias lnx="ssh lnx"
 alias ds="du -sh"
 alias mmv='noglob zmv -W'
-
 function f() { find . -iname "*$1*" ${@:2} }
 function r() { grep "$1" ${@:2} -R . }
 function mkcd() { mkdir -p "$@" && cd "$_"; }
 
-eval "$(thefuck --alias)"
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# Directory bookmark handler
+touch ~/.ndirs
+function rbm() { sed -i "/^$1\t/d" ~/.ndirs; export $1='' }
+function tbm() { hash -d _="$(pwd)" }
+function bm() { rbm $1; tbm $1; echo -e "$1\t$(pwd)" >> ~/.ndirs }
+function lbm() { sort ~/.ndirs }
+sed -e 's/^/hash -d /' -e 's/\t/="/' -e 's/$/"/' ~/.ndirs | while read line; do eval $line; done
