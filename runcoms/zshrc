@@ -26,8 +26,8 @@ setopt extendedglob
 unsetopt CASE_GLOB
 
 bindkey -v
-bindkey '^[[1;2C' forward-word
-bindkey '^[[1;2D' backward-word
+bindkey '^[[1;9C' forward-word
+bindkey '^[[1;9D' backward-word
 
 source /usr/local/share/zsh/site-functions/_aws
 
@@ -42,7 +42,6 @@ export SSH_KEY_PATH="~/.ssh/id_rsa"
 export LANG=en_US.UTF-8
 export PERL_MB_OPT="--install_base \"/Users/mah/.perl5\""
 export PERL_MM_OPT="INSTALL_BASE=/Users/mah/.perl5"
-export HOMEBREW_GITHUB_API_TOKEN="dc32ba71c9340762ffedf31fbc628e7ef38ea15d"
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
@@ -82,3 +81,46 @@ function tbm() { hash -d _="$(pwd)" }
 function bm() { rbm $1; tbm $1; echo -e "$1\t$(pwd)" >> ~/.ndirs }
 function lbm() { sort ~/.ndirs }
 sed -e 's/^/hash -d /' -e 's/\t/="/' -e 's/$/"/' ~/.ndirs | while read line; do eval $line; done
+
+calc () { echo "$*" | bc -l; }
+
+alias mini='ssh -tq -o "BatchMode yes" mymini.local'
+soundsample () {ffmpeg -i $1 -acodec copy -t 00:00:$2 -ss 00:00:00 sample.${1##*.}}
+alias hl='highlight -O ansi -l -J 100 -V --wrap-no-numbers'
+alias mdv=/Users/mah/.bin/mdviewer/mdv.py
+
+function pp()
+{
+	cols="$(($(tput cols)<100?$(tput cols):100))"
+	if [ ! -f "$1" ]; then
+		echo -e "File not found.\n"
+		return 1
+	fi
+	ext="${1##*.}"
+	case "$ext" in
+		json)
+			jq -r '' "$1" | hl -S json | less
+			;;
+		xml)
+			tidy -xml -q -i "$1" | hl -S xml | less
+			;;
+		html|xhtml|htm)
+			tidy -q -i "$1" 2>/dev/null | hl -S html | less
+			;;
+		csv)
+			column -s, -x -t "$1" | less
+			;;
+		tsv)
+			column -x -t "$1" | less
+			;;
+		rst|md|markdown|rmd|Rmd|rST|mmd)
+			mdv -c $cols $1 | less
+			;;
+		plist)
+			plutil -p $1 | hl -S ruby | less
+			;;
+		*)
+			(hl "$1" 2>/dev/null ||  cat "$1") | less
+			;;
+	esac
+}
