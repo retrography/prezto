@@ -61,6 +61,7 @@ export ARCHFLAGS="-arch x86_64"
 # Example aliases
 alias zshconf="vim $HOME/.zshrc"
 alias sshconf="vim $HOME/.ssh/config"
+alias tar='tar --use-compress-program=pigz'
 alias tarx="tar -xvf"
 function tarz() {gtar -vcf "$1.tar.gz" -I pigz "$1"}
 alias cam="rename -f --lower-case --camelcase"
@@ -88,6 +89,17 @@ alias mini='ssh -tq -o "BatchMode yes" mymini.local'
 soundsample () {ffmpeg -i $1 -acodec copy -t 00:00:$2 -ss 00:00:00 sample.${1##*.}}
 alias hl='highlight -O ansi -l -J 100 -V --wrap-no-numbers'
 alias mdv=/Users/mah/.bin/mdviewer/mdv.py
+function path() {readlink -f $1 | tee >(pbcopy)}
+function dir() {pwd | tee>(pbcopy)}
+alias rm=delete
+alias del=delete
+function cpbrew() {
+	if [ $# -eq 0 ]; then
+		echo -e "File not found.\n"
+		return 1
+	fi
+	scp -r 'mymac.local:/usr/local/Cellar/$1' 'myair.local:/usr/local/Cellar/'
+}
 
 function pp()
 {
