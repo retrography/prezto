@@ -133,3 +133,8 @@ function pp()
 	esac
 }
 
+function oq() {
+curl --header "Accept: text/csv" --user root:rutabaga -d "$1" "http://localhost:2480/command/gems/sql"
+}
+
+alias lsd='ls -d */'
