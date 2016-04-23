@@ -29,7 +29,7 @@ bindkey -v
 bindkey '^[[1;9C' forward-word
 bindkey '^[[1;9D' backward-word
 
-source /usr/local/share/zsh/site-functions/_aws
+#source /usr/local/share/zsh/site-functions/_aws
 
 export PATH="/usr/local/bin:/usr/local/sbin:/opt/local/sbin:$HOME/.bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/texbin:/usr/local/share/python:/usr/local/MacGPG2/bin:/opt/X11/bin:/usr/local/opt/go/libexec/bin:$HOME/.go/bin:/usr/local/texlive/2015/bin/x86_64-darwin"
 
@@ -136,3 +136,5 @@ function pp()
 			;;
 	esac
 }
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
