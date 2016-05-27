@@ -64,7 +64,7 @@ function tarz() {gtar -vcf "$1.tar.gz" -I pigz "$1"}
 alias cam="rename -f --lower-case --camelcase"
 alias cap="rename -f --upper-case"
 alias decap="rename -f --lower-case"
-
+alias rcp="rsync -avh --progress"
 alias stk="dirs -v"
 alias ds="du -sh"
 alias mmv='noglob zmv -W'
