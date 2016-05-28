@@ -28,7 +28,6 @@ unsetopt CASE_GLOB
 bindkey -v
 bindkey '^[[1;9C' forward-word
 bindkey '^[[1;9D' backward-word
-
 export PATH="/usr/local/bin:/usr/local/sbin:/opt/local/sbin:$HOME/.bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/texbin:/usr/local/share/python:/usr/local/MacGPG2/bin:/opt/X11/bin:/usr/local/opt/go/libexec/bin:$HOME/.go/bin:/usr/local/texlive/2015/bin/x86_64-darwin"
 export MANPATH="/usr/local/man:$MANPATH"
 export GROOVY_HOME=/usr/local/opt/groovy/libexec
@@ -138,3 +137,14 @@ curl --header "Accept: text/csv" --user root:rutabaga -d "$1" "http://localhost:
 }
 
 alias lsd='ls -d */'
+
+function wh() {
+	fname=`which "$1"`
+if [ -L "$fname" ]; then
+	dname=`dirname "$fname"`
+	fname=`readlink "$fname"`
+	realpath "$dname/$fname"
+else
+	echo "$fname"
+fi
+}
