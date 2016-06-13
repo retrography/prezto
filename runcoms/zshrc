@@ -28,7 +28,7 @@ unsetopt CASE_GLOB
 bindkey -v
 bindkey '^[[1;9C' forward-word
 bindkey '^[[1;9D' backward-word
-export PATH="/usr/local/bin:/usr/local/sbin:/opt/local/sbin:$HOME/.bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/texbin:/usr/local/share/python:/usr/local/MacGPG2/bin:/opt/X11/bin:/usr/local/opt/go/libexec/bin:$HOME/.go/bin:/usr/local/texlive/2015/bin/x86_64-darwin"
+export PATH="/usr/local/bin:/usr/local/sbin:/opt/bin:$HOME/.bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/texbin:/usr/local/share/python:/usr/local/MacGPG2/bin:/opt/X11/bin:/usr/local/opt/go/libexec/bin:$HOME/.go/bin:/usr/local/texlive/2015/bin/x86_64-darwin"
 export MANPATH="/usr/local/man:$MANPATH"
 export GROOVY_HOME=/usr/local/opt/groovy/libexec
 export SCALA_HOME=/usr/local/opt/scala/libexec
@@ -147,4 +147,19 @@ if [ -L "$fname" ]; then
 else
 	echo "$fname"
 fi
+}
+#exiftool -xmp:isbn="$isbn" "$1"
+
+function bmeta() {
+	#unzip -p cod.epub -x '*.jpg' | cat | grep -Eioh '.{100}isbn.{100}' | sed -E "s/.*isbn:?.* ([0-9lox.-]{13,18}).*/\1/gi"
+	isbn=`pdftotext -l 20 -q "$1" - | grep -A 2 -B 2 -i isbn | tr '\n' ' ' | sed -E "s/.*isbn.* ([0-9lox.-]{13,18}).*/\1/gi" | tr '.oOlL' '-0011'`
+	exiftool -q -xmp:isbn="$isbn" "$1"
+	printf "ISBN:\t$isbn\n\n"
+	printf "Searching...\n\n"
+	meta=`isbn_meta "$isbn" | tail -n +2`
+	echo "$meta"
+	params=`echo $meta | sed -r -e 's/^([^:]+): +/--\L\1=\L"/' -e 's/$/"/' -e "s/^--year/--date/" | tr '\n' ' ' | sed -r -e 's/ --author="/ --authors="/' -e 's/" --author="/ \& /g'`
+	cmd=`echo ebook-meta "'$1'" $params`
+	eval "$cmd"
+	title=${${par##*--title=\"}%%:*}
 }
